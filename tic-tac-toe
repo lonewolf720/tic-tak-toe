@@ -1,0 +1,124 @@
+import random
+
+basic = '''
+{0} | {3} | {6}
+
+{1} | {4} | {7}
+
+{2} | {5} | {8}'''
+states = [
+    '-', '-', '-',
+    '-', '-', '-',
+    '-', '-', '-'
+]
+
+class TicTacToe:
+    def __init__(self, shape='o', render=True):
+        self.shape = shape
+        self.machine_shape = 'o' if shape!='o' else 'x'
+        self.render = render
+        self.v_states = []
+        self.h_states = []
+        self.a_states = []
+        self.done = False
+
+    def step(self, step):
+        for i in [self.v_states, self.h_states, self.a_states]:
+            for d in i:
+                if d[0]==d[1]==d[2]!='-':
+                    self.done = True
+                    return "done"
+        if states[step] == '-':
+            states[step] = self.shape
+            self.do_update()
+            for i in [self.v_states, self.h_states, self.a_states]:
+                for d in i:
+                    if d[0]==d[1]==d[2]!='-':
+                        self.done = True
+                        return "done: you win"
+            move = self.do_move()
+            for i in [self.v_states, self.h_states, self.a_states]:
+                for d in i:
+                    if d[0]==d[1]==d[2]!='-':
+                        if self.render:
+                            self.print_game()
+                        self.done = True
+                        return "done: you lose"
+            if self.render:
+                self.print_game()
+                return True
+        else:
+            return (False)
+
+    def print_game(self):
+        print(basic.format(states[0], states[1], states[2], states[3], states[4], states[5], states[6], states[7], states[8]))
+    
+    def do_move(self):
+        for_return = None
+        for i, d in enumerate(self.v_states):
+            if (d[0]==d[2]) and d[1]=='-' and d[0]!='-':
+                states[[1, 4, 7][i]] = self.machine_shape
+                for_return = states[[1, 4, 7][i]]
+            elif (d[1]==d[2]) and d[0]=='-' and d[1]!='-':
+                states[[0, 3, 6][i]] = self.machine_shape
+                for_return = states[[0, 3, 6][i]]
+            elif (d[0]==d[1]) and d[2]=='-' and d[0]!='-':
+                states[[2, 5, 8][i]] = self.machine_shape
+                for_return = states[[2, 5, 8][i]]
+            self.do_update()
+            if for_return!=None:
+                return for_return
+        for i, d in enumerate(self.h_states):
+            if (d[0]==d[2]) and d[1]=='-' and d[0]!='-':
+                states[[3 ,4, 5][i]] = self.machine_shape
+                for_return = states[[3 ,4, 5][i]]
+            elif (d[1]==d[2]) and d[0]=='-' and d[1]!='-':
+                states[i] = self.machine_shape
+                for_return = states[i]
+            elif (d[0]==d[1]) and d[2]=='-' and d[0]!='-':
+                states[[6, 7, 8][i]] = self.machine_shape
+                for_return = states[[6, 7, 8][i]]
+            self.do_update()
+            if for_return!=None:
+                return for_return
+
+        for i, d in enumerate(self.a_states):
+            if (d[0]==d[2]) and d[1]=='-' and d[0]!='-':
+                states[4] = self.machine_shape
+                for_return = states[4]
+            elif (d[1]==d[2]) and d[0]=='-' and d[1]!='-':
+                states[[0, 6][i]] = self.machine_shape
+                for_return = states[[0, 6][i]]
+            elif (d[0]==d[1]) and d[2]=='-' and d[0]!='-':
+                states[[8, 2][i]] = self.machine_shape
+                for_return = states[[8, 2][i]]
+            self.do_update()
+            if for_return!=None:
+                return for_return
+        blank_for_fill = []
+        for i, d in enumerate(states):
+            if d=='-':
+                blank_for_fill.append(i)
+        state = random.choice(blank_for_fill)
+        states[state] = self.machine_shape
+        self.do_update()
+        return states[state]
+
+    def do_update(self):
+        self.v_states = [
+            [states[0], states[1], states[2]], [states[3], states[4], states[5]], [states[6], states[7], states[8]]
+        ]
+        self.h_states = [
+            [states[0], states[3], states[6]], [states[1], states[4], states[7]], [states[2], states[5], states[8]]
+        ]
+        self.a_states = [
+            [states[0], states[4], states[8]], [states[6], states[4], states[2]]
+        ]
+
+def main():
+    ttt = TicTacToe()
+    while not ttt.done:
+        print(ttt.step(int(input('enter a number: '))))
+
+if __name__ == '__main__':
+    main()
